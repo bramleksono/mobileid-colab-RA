@@ -14,9 +14,10 @@ function sendjson($data,$url) {
 	return $result = @file_get_contents($url, false, $context);
 }
 
-function sendfile($filepath,$data,$url) {
+function sendfile($filepath,$content,$url) {
     //This needs to be the full path to the file you want to send.
-	echo $file_name_with_full_path = realpath($filepath);
+	$file_name_with_full_path = realpath($filepath);
+	$data['content'] = $content;
 	$data['file_contents'] = '@'.$file_name_with_full_path;
 	
 	$ch = curl_init();

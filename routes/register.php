@@ -137,9 +137,10 @@ $app->get('/register', function () use($app,$twig) {
 	
 });
 
-$app->post('/register/', function () use ($app) {
+$app->post('/register/', function () use ($app,$twig) {
 	//get address
 	global $CAuserreg;
+	global $CAuserregconfirm;
 	$idnumber = $app->request()->post("nik");
 	
 	$form= array(
@@ -171,6 +172,15 @@ $app->post('/register/', function () use ($app) {
 			$error = "Semua kolom harus diisi. ";
 		}
 	}
+
+	//move signature image
+	$target_dir = "tmp/". $idnumber.".sig.jpg";
+	$uploadOk=1;
+	if (move_uploaded_file($_FILES["signaturePicture"]["tmp_name"], $target_dir)) {
+		//$message = "The file ". $target_dir . " has been uploaded.";
+	} else {
+		$error = "There was an error uploading your file.";
+	}
 	
 	//give message
 	if (!empty($error)) {
@@ -178,22 +188,10 @@ $app->post('/register/', function () use ($app) {
 		$app->flash('error', $error);
 	} else {
 		
-		//save signature to temp file
-		
-		$target_dir = "tmp/". $idnumber.".sig.jpg";
-		$uploadOk=1;
-		if (move_uploaded_file($_FILES["signaturePicture"]["tmp_name"], $target_dir)) {
-			echo $message = "The file ". $target_dir . " has been uploaded.";
-		} else {
-			echo $message = "Sorry, there was an error uploading your file.";
-		}
-
 		//form valid
 		//construct json
 		$data = constregtoCA($form);
-		$data["content"] = json_encode($data);
-		
-		//$CAuserreg = 'http://localhost:8080/user';
+		$data = json_encode($data);
 		
 		//send form request to CA (save to database) and SI (create key pair)
 		//$response = sendjson($data,$CAuserreg);
@@ -202,10 +200,34 @@ $app->post('/register/', function () use ($app) {
 		if (empty($response)) {
 			echo "Cannot send message to CA.";
 		}
-		var_dump($response);
+		
+		$response = json_decode($response);
 		
 		$app->flash('info', 'Pendaftaran berhasil.');
 	}
+	
+	
+	$username = 'Bramanto Leksono';
+	$content = '<div class="response">
+					<h2>Final step.</h2>
+					<h2>Scan this code : </h2><p><img src="http://chart.apis.google.com/chart?cht=qr&amp;chs=300x300&amp;chl='.urlencode($CAuserregconfirm).'%3Fregcode%3D'. $response->regcode . '&amp;chld=H|0" alt="QR Code" /></p>
+					<h2>Registration number: '.$response->regcode.'</h1>
+				</div>';
+	
+	$display=array(
+	    'pagetitle' => 'Menu Pendaftaran Pemilik Identitas - MobileID RA',
+	    'heading' => 'Petunjuk',
+	    'subheading' => 'Halaman pendaftaran pemilik identitas (baru dan lama)',
+	    'content' => $content,
+	    'username' => $username,
+		'license' => 'Aplikasi RA - Mobile ID',
+		'year' => '2015',
+		'author' => 'Bramanto Leksono',
+	);
+	
+	
+	
+	echo $twig->render('home.tmpl',$display);
 	
 	//$app->redirect('/register');
 });
