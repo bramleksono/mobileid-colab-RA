@@ -7,18 +7,6 @@ $app->get('/register', function () use($app,$twig) {
 					  <h2>Form Pendaftaran Pemilik Identitas</h2>
 					  <form class="form-horizontal" action="register" method="post" enctype="multipart/form-data">
 						<div class="form-group">
-						  <label class="control-label col-sm-2">PIN</label>
-						  <div class="col-sm-10">
-							<input type="password" class="form-control" name="pin" placeholder="PIN">
-						  </div>
-						</div>
-						<div class="form-group">
-						  <label class="control-label col-sm-2">PIN (ulangi)</label>
-						  <div class="col-sm-10">
-							<input type="password" class="form-control" name="pin2" placeholder="Masukkan PIN yang sama">
-						  </div>
-						</div>
-						<div class="form-group">
 						  <label class="control-label col-sm-2">NIK</label>
 						  <div class="col-sm-10">
 							<input type="text" class="form-control" name="nik" placeholder="Nomor NIK">
@@ -101,8 +89,7 @@ $app->get('/register', function () use($app,$twig) {
 						  <div class="col-sm-10">
 							<input type="text" class="form-control" name="berlaku" placeholder="Berlaku hingga">
 						  </div>
-						</div>		
-						<ol class="breadcrumb">Masukkan file gambar tandatangan <input type="file" name="signaturePicture"></ol>			
+						</div>
 						<div class="form-group">        
 						  <div class="col-sm-offset-2 col-sm-10">
 							<button type="submit" class="btn btn-primary">Submit</button>
@@ -140,11 +127,11 @@ $app->get('/register', function () use($app,$twig) {
 $app->post('/register/', function () use ($app,$twig) {
 	//get address
 	global $CAuserreg;
+	global $CAuserregcheck;
 	global $CAuserregconfirm;
 	$idnumber = $app->request()->post("nik");
 	
 	$form= array(
-			'pin' => $app->request()->post("pin"),
 			'nik' => $app->request()->post("nik"),
 			'nama' => $app->request()->post("nama"),
 			'ttl' => $app->request()->post("ttl"),
@@ -161,11 +148,6 @@ $app->post('/register/', function () use ($app,$twig) {
 			'berlaku' => $app->request()->post("berlaku")
 	);
 	
-	//check if password equal
-	if ($app->request()->post("pin") != $app->request()->post("pin2")) {
-		$error = "PIN tidak sama. ";
-	}
-	
 	//check if empty field exist
 	foreach ($form as $field) {
 		if (empty($field)) {
@@ -173,15 +155,6 @@ $app->post('/register/', function () use ($app,$twig) {
 		}
 	}
 
-	//move signature image
-	$target_dir = "tmp/". $idnumber.".sig.jpg";
-	$uploadOk=1;
-	if (move_uploaded_file($_FILES["signaturePicture"]["tmp_name"], $target_dir)) {
-		//$message = "The file ". $target_dir . " has been uploaded.";
-	} else {
-		$error = "There was an error uploading your file.";
-	}
-	
 	//give message
 	if (!empty($error)) {
 		//TODO: using switch case for every error possibility
@@ -194,23 +167,34 @@ $app->post('/register/', function () use ($app,$twig) {
 		$data = json_encode($data);
 		
 		//send form request to CA (save to database) and SI (create key pair)
-		//$response = sendjson($data,$CAuserreg);
-		$response = sendfile($target_dir,$data,$CAuserreg);
-		
-		if (empty($response)) {
-			echo "Cannot send message to CA.";
+		//$CAuserreg = "http://postcatcher.in/catchers/54ddc73c0f95ce0300000e0e";
+		try {
+			$response = sendjson($data,$CAuserreg);
+
+			
+			if (!empty($response)) {
+				$response = json_decode($response);
+				$app->flash('info', 'Pendaftaran berhasil.');
+			} else {
+				throw new ResourceNotFoundException();
+			}
+		} catch (ResourceNotFoundException $e) {
+			// return 404 server error
+			$app->response()->status(404);
+		} catch (Exception $e) {
+			$app->response()->status(400);
+			$app->response()->header('X-Status-Reason', $e->getMessage());
 		}
-		
-		$response = json_decode($response);
-		
-		$app->flash('info', 'Pendaftaran berhasil.');
 	}
 	
-	
+	$jsonresponse = array(	"RegCheckAddr" => $CAuserregcheck,
+							"RegConfirmAddr" => $CAuserregconfirm,
+							"RegCode" => $response->regcode);
+	$jsonresponse = json_encode($jsonresponse, JSON_UNESCAPED_SLASHES);
 	$username = 'Bramanto Leksono';
 	$content = '<div class="response">
 					<h2>Final step.</h2>
-					<h2>Scan this code : </h2><p><img src="http://chart.apis.google.com/chart?cht=qr&amp;chs=300x300&amp;chl='.urlencode($CAuserregconfirm).'%3Fregcode%3D'. $response->regcode . '&amp;chld=H|0" alt="QR Code" /></p>
+					<h2>Scan this code : </h2><p><img src="http://chart.apis.google.com/chart?cht=qr&amp;chs=300x300&amp;chl='.urlencode($jsonresponse). '&amp;chld=H|0" alt="QR Code" /></p>
 					<h2>Registration number: '.$response->regcode.'</h1>
 				</div>';
 	
@@ -224,9 +208,7 @@ $app->post('/register/', function () use ($app,$twig) {
 		'year' => '2015',
 		'author' => 'Bramanto Leksono',
 	);
-	
-	
-	
+
 	echo $twig->render('home.tmpl',$display);
 	
 	//$app->redirect('/register');
