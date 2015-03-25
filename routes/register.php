@@ -1,10 +1,17 @@
 <?php
 
 $app->get('/register', function () use($app,$twig) {
-	$username = 'Bramanto Leksono';
-	
+    if(isset($_SESSION["user"])){
+        $username = $_SESSION["user"];
+        $fullname = $_SESSION["name"];
+    }
+    else{
+        header("Location: ./");
+        die();
+    }
+
 	$content = '	<div class="identity form">
-					  <h2>Form Pendaftaran Pemilik Identitas</h2>
+					  <h2>Registration Form</h2>
 					  <form class="form-horizontal" action="register" method="post" enctype="multipart/form-data">
 						<div class="form-group">
 						  <label class="control-label col-sm-2">NIK</label>
@@ -100,12 +107,12 @@ $app->get('/register', function () use($app,$twig) {
 				';
 	
 	$display=array(
-	    'pagetitle' => 'Menu Pendaftaran Pemilik Identitas - MobileID RA',
-	    'heading' => 'Petunjuk',
-	    'subheading' => 'Halaman pendaftaran pemilik identitas (baru dan lama)',
+	    'pagetitle' => 'Registration - MobileID RA',
+	    'heading' => 'Directive',
+	    'subheading' => 'Fill Registration Form for new and existing Mobile ID user',
 	    'content' => $content,
 	    'username' => $username,
-		'license' => 'Aplikasi RA - Mobile ID',
+		'license' => 'Mobile ID RA Application',
 		'year' => '2015',
 		'author' => 'Bramanto Leksono',
 	);
@@ -120,11 +127,20 @@ $app->get('/register', function () use($app,$twig) {
 		$display = array_merge($display, $info);
 	}	
 	
-	echo $twig->render('home.tmpl',$display);
+	echo $twig->render('home.html',$display);
 	
 });
 
 $app->post('/register/', function () use ($app,$twig) {
+    if(isset($_SESSION["user"])){
+        $username = $_SESSION["user"];
+        $fullname = $_SESSION["name"];
+    }
+    else{
+        header("Location: ./");
+        die();
+    }
+
 	//get address
 	global $CAuserreg;
 	global $CAuserregcheck;
@@ -209,7 +225,7 @@ $app->post('/register/', function () use ($app,$twig) {
 		'author' => 'Bramanto Leksono',
 	);
 
-	echo $twig->render('home.tmpl',$display);
+	echo $twig->render('home.html',$display);
 	
 	//$app->redirect('/register');
 });

@@ -1,18 +1,27 @@
 <?php
 
 $app->get('/home', function () use($app,$twig) {
-	$username = 'Bramanto Leksono';
-	$greet = "Selamat datang, ".$username.". Pilih menu disamping untuk memulai.";
+
+    if(isset($_SESSION["user"])){
+        $username = $_SESSION["user"];
+        $fullname = $_SESSION["name"];
+    }
+    else{
+        header("Location: ./");
+        die();
+    }
+
+	$greet = "Welcome, ".$username.". Select menu to get started.";
 	
 	$display=array(
-	    'pagetitle' => 'Menu Utama - MobileID RA',
-	    'heading' => 'Petunjuk',
+	    'pagetitle' => 'Main Menu - MobileID RA',
+	    'heading' => 'Directive',
 	    'subheading' => $greet,
 	    'username' => $username,
-		'license' => 'Aplikasi RA - Mobile ID',
+		'license' => 'Mobile ID RA Application',
 		'year' => '2015',
 		'author' => 'Bramanto Leksono',
 	);
-	echo $twig->render('home.tmpl',$display);
+	echo $twig->render('home.html',$display);
 	
 });
