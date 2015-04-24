@@ -2,6 +2,7 @@
 //Aplikasi Mobile ID - RA untuk kolaborasi internet.
 
 require 'vendor/autoload.php';
+date_default_timezone_set("Asia/Jakarta");
 
 //twig init
 $loader = new Twig_Loader_Filesystem('templates');
