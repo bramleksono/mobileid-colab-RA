@@ -125,7 +125,7 @@ $app->get('/register', function () use($app,$twig) {
 	if (isset($_SESSION['slim.flash']['error'])) {
 		$info=array('alert' => $_SESSION['slim.flash']['error']);
 		$display = array_merge($display, $info);
-	}	
+	}
 	
 	echo $twig->render('home.html',$display);
 	
@@ -167,7 +167,7 @@ $app->post('/register/', function () use ($app,$twig) {
 	//check if empty field exist
 	foreach ($form as $field) {
 		if (empty($field)) {
-			$error = "Semua kolom harus diisi. ";
+			$error = "All column must be filled";
 		}
 	}
 
@@ -175,6 +175,7 @@ $app->post('/register/', function () use ($app,$twig) {
 	if (!empty($error)) {
 		//TODO: using switch case for every error possibility
 		$app->flash('error', $error);
+		$app->redirect('/register');
 	} else {
 		
 		//form valid
@@ -209,23 +210,32 @@ $app->post('/register/', function () use ($app,$twig) {
 	$jsonresponse = json_encode($jsonresponse, JSON_UNESCAPED_SLASHES);
 	$username = 'Bramanto Leksono';
 	$content = '<div class="response">
-					<h2>Final step.</h2>
-					<h2>Scan this code : </h2><p><img src="http://chart.apis.google.com/chart?cht=qr&amp;chs=300x300&amp;chl='.urlencode($jsonresponse). '&amp;chld=H|0" alt="QR Code" /></p>
-					<h2>Registration number: '.$response->regcode.'</h1>
+					<img src="http://chart.apis.google.com/chart?cht=qr&amp;chs=300x300&amp;chl='.urlencode($jsonresponse). '&amp;chld=H|0" alt="QR Code" />
+					<h2>Registration number: '.$response->regcode.'</h2>
 				</div>';
 	
 	$display=array(
-	    'pagetitle' => 'Menu Pendaftaran Pemilik Identitas - MobileID RA',
-	    'heading' => 'Petunjuk',
-	    'subheading' => 'Halaman pendaftaran pemilik identitas (baru dan lama)',
+	    'pagetitle' => 'Registration - MobileID RA',
+	    'heading' => 'Directive',
+	    'subheading' => 'Scan QR Code using user device.',
 	    'content' => $content,
 	    'username' => $username,
-		'license' => 'Aplikasi RA - Mobile ID',
+		'license' => 'Mobile ID RA Application',
 		'year' => '2015',
 		'author' => 'Bramanto Leksono',
 	);
 
-	echo $twig->render('home.html',$display);
+	if (isset($_SESSION['slim.flash']['info'])) {
+		$info=array('info' => $_SESSION['slim.flash']['info']);
+		$display = array_merge($display, $info);
+	}
+	
+	if (isset($_SESSION['slim.flash']['error'])) {
+		$info=array('alert' => $_SESSION['slim.flash']['error']);
+		$display = array_merge($display, $info);
+	}
+	
+	echo $twig->render('postregister.html',$display);
 	
 	//$app->redirect('/register');
 });

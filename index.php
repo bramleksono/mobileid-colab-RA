@@ -15,7 +15,7 @@ $app = new \Slim\Slim(array(
 
 $app = new \Slim\Slim(array(
     'cookies.encrypt' => true,
-    'cookies.secret_key' => 'mobileid-web',
+    'cookies.secret_key' => 'mobileid-ra',
     'cookies.cipher' => MCRYPT_RIJNDAEL_256,
     'cookies.cipher_mode' => MCRYPT_MODE_CBC
 ));

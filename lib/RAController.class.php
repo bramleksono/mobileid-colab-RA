@@ -56,6 +56,5 @@ class RAController {
     public function endSession() {
         // Unset all of the session variables.
         $_SESSION = array();
-        header("Location: ./");
     }
 }
