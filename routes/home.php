@@ -11,7 +11,7 @@ $app->get('/home', function () use($app,$twig) {
         die();
     }
 
-	$greet = "Welcome, ".$username.". Select menu to get started.";
+	$greet = "Welcome, ".$username.". Select Registration to get started  (Selamat datang, pilih Registration untuk memulai).";
 	
 	$display=array(
 	    'pagetitle' => 'Main Menu - MobileID RA',

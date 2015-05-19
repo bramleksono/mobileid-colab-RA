@@ -4,7 +4,7 @@ $app->get('/login', function () use($app, $twig) {
 	$login=array(
 	    'pagetitle' => 'Login - MobileID RA',
 	    'heading' => 'Mobile ID RA Application',
-		'subheading' => 'Enter User Name and Password Below',
+		'subheading' => 'Enter User Name and Password (Masukkan User Name dan Password)',
 		'license' => 'Mobile ID RA Application',
 		'year' => '2015',
 		'author' => 'Bramanto Leksono',
@@ -24,7 +24,7 @@ $app->post('/process', function () use ($app, $twig) {
     
     if ($username == "") {
 		//invalid input
-		$app->flash('error', 'Input is not valid. Please enter correct input');
+		$app->flash('error', 'Input is empty (Input kosong)');
 		$app->redirect('/login');
 	} else {
 		//check user input with RA user database
@@ -34,7 +34,7 @@ $app->post('/process', function () use ($app, $twig) {
 			$controller->startSession($username);
 			$app->redirect('/home');
 		} else {
-			$app->flash('error', 'Wrong User Name and Password. Please enter correct input');
+			$app->flash('error', 'Wrong User Name or Password (User Name atau Password Salah)');
 			$app->redirect('/login');			
 		}
 	}

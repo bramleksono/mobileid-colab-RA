@@ -11,7 +11,9 @@ $app->get('/register', function () use($app,$twig) {
     }
 
 	$content = '	<div class="identity form">
+					  <br>
 					  <h2>Registration Form</h2>
+					  <br>
 					  <form class="form-horizontal" action="register" method="post" enctype="multipart/form-data">
 						<div class="form-group">
 						  <label class="control-label col-sm-2">NIK</label>
@@ -54,7 +56,7 @@ $app->get('/register', function () use($app,$twig) {
 						  <div class="col-sm-10">
 							<input type="text" class="form-control" name="rtrw" placeholder="RT / RW">
 						  </div>
-						</div>						
+						</div>					
 						<div class="form-group">
 						  <label class="control-label col-sm-2">Kelurahan/Desa</label>
 						  <div class="col-sm-10">
@@ -108,8 +110,8 @@ $app->get('/register', function () use($app,$twig) {
 	
 	$display=array(
 	    'pagetitle' => 'Registration - MobileID RA',
-	    'heading' => 'Directive',
-	    'subheading' => 'Fill Registration Form for new and existing Mobile ID user',
+	    'heading' => 'Directive (Petunjuk)',
+	    'subheading' => 'Fill Registration Form for new and existing user (Isi Form Registrasi untuk pengguna baru atau lama).',
 	    'content' => $content,
 	    'username' => $username,
 		'license' => 'Mobile ID RA Application',
@@ -167,7 +169,7 @@ $app->post('/register/', function () use ($app,$twig) {
 	//check if empty field exist
 	foreach ($form as $field) {
 		if (empty($field)) {
-			$error = "All column must be filled";
+			$error = "All column must be filled (Semua Kolom Harus Diisi)";
 		}
 	}
 
@@ -191,7 +193,7 @@ $app->post('/register/', function () use ($app,$twig) {
 			
 			if (!empty($response)) {
 				$response = json_decode($response);
-				$app->flash('info', 'Pendaftaran berhasil.');
+				$app->flash('info', 'Registration Request Sent (Permintaan Pendaftaran Berhasil Dikirim).');
 			} else {
 				throw new ResourceNotFoundException();
 			}
@@ -217,7 +219,7 @@ $app->post('/register/', function () use ($app,$twig) {
 	$display=array(
 	    'pagetitle' => 'Registration - MobileID RA',
 	    'heading' => 'Directive',
-	    'subheading' => 'Scan QR Code using user device.',
+	    'subheading' => 'Scan QR Code using user device (Pindai Kode QR menggunakan perangkat pengguna).',
 	    'content' => $content,
 	    'username' => $username,
 		'license' => 'Mobile ID RA Application',
