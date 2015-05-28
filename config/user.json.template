@@ -1,4 +1,4 @@
 {"users":[
     {"user":"user1","passwd":"passworduser1","name":"Authorized Registrar"},
-    {"user":"user2","passwd":"user2password","name":"Authorized Registrar"},
+    {"user":"user2","passwd":"user2password","name":"Authorized Registrar"}
 ]}
