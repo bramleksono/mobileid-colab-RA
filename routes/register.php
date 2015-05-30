@@ -18,7 +18,7 @@ $app->get('/register', function () use($app,$twig) {
 						<div class="form-group">
 						  <label class="control-label col-sm-2">NIK</label>
 						  <div class="col-sm-10">
-							<input type="text" class="form-control" name="nik" placeholder="Nomor NIK">
+							<input type="text" class="form-control" name="nik" maxlength="16" placeholder="Nomor NIK">
 						  </div>
 						</div>
 						<div class="form-group">
